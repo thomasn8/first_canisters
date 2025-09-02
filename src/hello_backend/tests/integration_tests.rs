@@ -31,3 +31,27 @@ fn test_greet() {
     let result: String = decode_one(&response).unwrap();
     assert_eq!(result, "Hello, ICP!");
 }
+
+#[test]
+fn test_set_greeting() {
+    let (pic, backend_canister) = setup();
+
+    pic.update_call(
+        backend_canister,
+        Principal::anonymous(),
+        "set_greeting",
+        encode_one("Hi, ").unwrap(),
+    )
+    .unwrap();
+
+    let Ok(response) = pic.query_call(
+        backend_canister,
+        Principal::anonymous(),
+        "greet",
+        encode_one("ICP").unwrap(),
+    ) else {
+        panic!("Expected reply");
+    };
+    let result: String = decode_one(&response).unwrap();
+    assert_eq!(result, "Hi, ICP!");
+}
