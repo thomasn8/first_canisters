@@ -5,7 +5,8 @@ function Home() {
         <div>
             <h1>Router:</h1>
             <nav>
-                <Link to="/symmetric">Symmetric encryption/decryption for caller</Link><br/>
+                <Link to="/symmetric">Encrypt/decrypt message with a personal symmetric key</Link><br/>
+                <Link to="/ibe">Asymetrically encrypt message for a recipient or Decrypt a received message</Link><br/>
             </nav>
         </div>
     );
