@@ -67,6 +67,8 @@ function Symmetric() {
 
   return (
     <main>
+      <div>Identity: 2vxsx-fae</div>
+      
       <div>
         <h3>1. Vetkey</h3>
         <p>– Fetch personnal vetkey from the backend.</p>

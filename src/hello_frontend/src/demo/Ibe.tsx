@@ -77,6 +77,8 @@ function Ibe() {
 
     return (
         <main>
+            <div>Identity: 2vxsx-fae</div>
+
             <div>
                 <h3>1.1 Pubkey</h3>
                 <p>– Fetch the canister public key from the backend.</p>
