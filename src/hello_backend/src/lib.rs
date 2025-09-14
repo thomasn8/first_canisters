@@ -41,9 +41,8 @@ fn greet(name: String) -> String {
     format!("{greeting}{name}!")
 }
 
-/// Derive encrypted vetKey for caller's principal.
 #[update]
-async fn vetkd_derive_ibe_key(transport_public_key: Vec<u8>) -> Vec<u8> {
+async fn vetkd_personal_vetkey(transport_public_key: Vec<u8>) -> Vec<u8> {
     let caller = ic_cdk::api::msg_caller();
     debug_println_caller("get_my_encrypted_ibe_key");
     ic_cdk::println!("{:?}", caller.to_text());

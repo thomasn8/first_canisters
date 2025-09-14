@@ -2,6 +2,6 @@ service : {
   greet : (text) -> (text) query;
   set_greeting : (text) -> ();
   // Derive encrypted vetKey for caller's principal.
-  vetkd_derive_ibe_key : (blob) -> (blob);
+  vetkd_personal_vetkey : (blob) -> (blob);
   vetkd_public_key : () -> (blob);
 }
