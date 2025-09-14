@@ -14,5 +14,10 @@
   "type": "module",
   "workspaces": [
     "src/hello_frontend"
-  ]
+  ],
+  "dependencies": {
+    "@dfinity/vetkeys": "^0.4.0",
+    "react-router": "^7.9.1",
+    "react-router-dom": "^7.9.1"
+  }
 }
