@@ -1,7 +1,8 @@
 service : {
-  greet : (text) -> (text) query;
-  set_greeting : (text) -> ();
-  // Derive encrypted vetKey for caller's principal.
+  get_nft : (text) -> (text) query;
+  own_nft_by_id : (text) -> (text);
+  update_nft : (text, text, vec text) -> (text);
+  vetkd_nft_vetkey : (text, blob) -> (blob);
   vetkd_personal_vetkey : (blob) -> (blob);
   vetkd_public_key : () -> (blob);
 }

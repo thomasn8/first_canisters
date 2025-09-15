@@ -7,6 +7,7 @@ function Home() {
             <nav>
                 <Link to="/symmetric">• Encrypt/decrypt message with a personal symmetric key</Link><br/>
                 <Link to="/ibe">• Asymetrically encrypt message for a recipient or Decrypt a received message</Link><br/>
+                <Link to="/nft">• Encrypt the content of the NFT to allow access to specific identifiers</Link><br/>
             </nav>
         </div>
     );

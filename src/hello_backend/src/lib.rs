@@ -1,53 +1,60 @@
 use candid::Principal;
 use ic_cdk::management_canister::{VetKDCurve, VetKDDeriveKeyArgs, VetKDKeyId, VetKDPublicKeyArgs};
 use ic_cdk::{query, update};
-use ic_stable_structures::{
-    memory_manager::{MemoryId, MemoryManager, VirtualMemory},
-    DefaultMemoryImpl, Storable,
-};
+use serde::{Deserialize, Serialize};
 use std::cell::RefCell;
 
-type Memory = VirtualMemory<DefaultMemoryImpl>;
+mod nft;
+use crate::nft::Nft;
+
+// The state of the canister.
+#[derive(Serialize, Deserialize, Clone)]
+struct State {
+    // Data that lives on the heap.
+    // This is an example for data that would need to be serialized/deserialized on every upgrade for it to be persisted
+    nft_collection: Vec<Nft>,
+}
+
+impl State {
+    fn new() -> Self {
+        let item1 = Nft {
+            id: "abc".to_string(),
+            owner: ic_cdk::api::canister_self(),
+            authorized_principals: vec![],
+            encrypted_content: None,
+        };
+
+        Self {
+            nft_collection: vec![item1],
+        }
+    }
+}
+
+thread_local! {
+    static STATE: RefCell<State> = RefCell::new(State::new());
+}
 
 const DOMAIN_SEPARATOR: &str = "vetkeys-example";
 
-// To store global state in a Rust canister, we use the `thread_local!` macro.
-thread_local! {
-    // The memory manager is used for simulating multiple memories. Given a `MemoryId` it can
-    // return a memory that can be used by stable structures.
-    static MEMORY_MANAGER: RefCell<MemoryManager<DefaultMemoryImpl>> =
-        RefCell::new(MemoryManager::init(DefaultMemoryImpl::default()));
-
-    // We store the greeting in a `Cell` in stable memory such that it gets persisted over canister upgrades.
-    static GREETING: RefCell<ic_stable_structures::Cell<String, Memory>> = RefCell::new(
-        ic_stable_structures::Cell::init(
-            MEMORY_MANAGER.with(|m| m.borrow().get(MemoryId::new(0))), "Hello, ".to_string()
-        )
-    );
-}
-
-// This update method stores the greeting prefix in stable memory.
 #[update]
-fn set_greeting(prefix: String) {
-    GREETING.with_borrow_mut(|greeting| {
-        greeting.set(prefix);
-    });
-}
-
-// This query method returns the currently persisted greeting with the given name.
-#[query]
-fn greet(name: String) -> String {
-    let greeting = GREETING.with_borrow(|greeting| greeting.get().clone());
-    format!("{greeting}{name}!")
+async fn own_nft_by_id(nft_id: String) -> String {
+    STATE.with(|s| {
+        let mut state = s.borrow_mut();
+        match Nft::get_nft_mut(&mut state.nft_collection, &nft_id) {
+            Some(nft) => {
+                nft.owner = ic_cdk::api::msg_caller();
+                nft.to_string()
+            }
+            None => format!("Error: no NFT with id {}", nft_id),
+        }
+    })
 }
 
 #[update]
 async fn vetkd_personal_vetkey(transport_public_key: Vec<u8>) -> Vec<u8> {
-    let caller = ic_cdk::api::msg_caller();
-    debug_println_caller("get_my_encrypted_ibe_key");
-    ic_cdk::println!("{:?}", caller.to_text());
-    ic_cdk::println!("{:?}", caller.to_bytes());
+    debug_println_caller("vetkd_personal_vetkey");
 
+    let caller = ic_cdk::api::msg_caller();
     let request = VetKDDeriveKeyArgs {
         input: caller.as_ref().to_vec(),
         context: DOMAIN_SEPARATOR.as_bytes().to_vec(),
@@ -62,7 +69,29 @@ async fn vetkd_personal_vetkey(transport_public_key: Vec<u8>) -> Vec<u8> {
 }
 
 #[update]
+async fn vetkd_nft_vetkey(nft_id: &str, transport_public_key: Vec<u8>) -> Vec<u8> {
+    debug_println_caller("vetkd_nft_vetkey");
+    if let Err(err) = ensure_caller_is_nft_owner(nft_id) {
+        panic!("Fatal error: {err}");
+    }
+
+    let request = VetKDDeriveKeyArgs {
+        input: nft_id.bytes().collect(),
+        context: DOMAIN_SEPARATOR.as_bytes().to_vec(),
+        transport_public_key,
+        key_id: bls12_381_g2_test_key(),
+    };
+
+    let reply = ic_cdk::management_canister::vetkd_derive_key(&request)
+        .await
+        .expect("failed to derive key");
+    reply.encrypted_key
+}
+
+#[update]
 async fn vetkd_public_key() -> Vec<u8> {
+    debug_println_caller("vetkd_public_key");
+
     let request = VetKDPublicKeyArgs {
         canister_id: None,
         context: DOMAIN_SEPARATOR.as_bytes().to_vec(),
@@ -73,6 +102,60 @@ async fn vetkd_public_key() -> Vec<u8> {
         .await
         .expect("failed to derive key");
     reply.public_key
+}
+
+#[update]
+async fn update_nft(
+    nft_id: &str,
+    nft_content_encrypted_bytes_hex: &str,
+    authorized_principals: Vec<&str>,
+) -> String {
+    debug_println_caller("update_nft");
+    if let Err(err) = ensure_caller_is_nft_owner(nft_id) {
+        return err;
+    }
+
+    let authorized_principals: Vec<Principal> = if !authorized_principals.is_empty() {
+        match authorized_principals
+            .into_iter()
+            .map(string_into_principal)
+            .collect()
+        {
+            Ok(v) => v,
+            Err(err) => return format!("Error: {}", err),
+        }
+    } else {
+        vec![]
+    };
+
+    STATE.with(|s| {
+        let mut state = s.borrow_mut();
+        match Nft::get_nft_mut(&mut state.nft_collection, nft_id) {
+            Some(nft) => {
+                nft.encrypted_content = Some(nft_content_encrypted_bytes_hex.to_string());
+                nft.authorized_principals = authorized_principals;
+                nft.to_string()
+            }
+            None => format!("Error: no NFT with id {}", nft_id),
+        }
+    })
+}
+
+#[query]
+fn get_nft(nft_id: &str) -> String {
+    debug_println_caller("get_nft");
+
+    if let Err(err) = ensure_caller_is_nft_owner(nft_id) {
+        return err;
+    }
+
+    STATE.with(|s| {
+        let state = s.borrow();
+        match Nft::get_nft(&state.nft_collection, nft_id) {
+            Some(nft) => nft.to_string(),
+            None => format!("Error: no NFT with id {}", nft_id),
+        }
+    })
 }
 
 fn bls12_381_g2_test_key() -> VetKDKeyId {
@@ -91,5 +174,25 @@ fn debug_println_caller(method_name: &str) {
     );
 }
 
-// Export the interface for the smart contract.
+fn ensure_caller_is_nft_owner(nft_id: &str) -> Result<(), String> {
+    let caller = ic_cdk::api::msg_caller().to_text();
+
+    STATE.with(|s| {
+        let state = s.borrow();
+        match Nft::get_nft(&state.nft_collection, nft_id) {
+            Some(nft) => {
+                if nft.owner.to_text() != caller {
+                    return Err("Error: unauthorized".to_string());
+                }
+                Ok(())
+            }
+            None => Err(format!("Error: no NFT with id {}", nft_id)),
+        }
+    })
+}
+
+fn string_into_principal(s: &str) -> Result<Principal, String> {
+    Principal::from_text(s).map_err(|e| format!("invalid principal '{}': {e}", s))
+}
+
 ic_cdk::export_candid!();

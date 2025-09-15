@@ -1,0 +1,29 @@
+Encrypter le contenu du NFT:
+
+    Possibilite 1: IBE use the owner id (easier/flexible control)
+        1. Encryption et stockage:
+            1.1 Frontend: On obtient la pub key et on encrypte le contenu avec IBE en se basant sur l'id du NFT
+            1.2 Frontend->Backend: On envoie le contenu encrypté au backend qui le save en memoire
+        2. Retrait et decryption:
+            2.1 Frontend->Backend: On envoie une query pour obtenir le NFT et son contenu
+            2.2 Backend: Access control, le backend check si le caller est le owner du NFT id.
+            2.3 Backend->Frontend:
+                2.3.1 si non, retourn une erreur
+                2.3.2 si oui, retourne le NFT encrypte et son contenu
+            2.4 Frontend: si recu le NFT, demande la vetkey pour pouvoir dechiffrer son contenu (NFT id)
+        Note: dans ce cas, pas besoin de re encrypte le NFT a chaque changement de owner
+        Note: plusieur principal peuvent acceder au contenu du NFT
+
+    Possibilite 2: IBE use the owner id (stricter control)
+        1. Encryption et stockage:
+            1.1 Frontend: On obtient la pub key et on encrypte le contenu avec IBE en se basant sur le principal du owner + l'id du NFT
+            1.2 Frontend->Backend: On envoie le contenu encrypté au backend qui le save en memoire
+        2. Retrait et decrption:
+            2.1 Frontend->Backend: On envoie une query pour obtenir le NFT et son contenu
+            2.2 Backend: Access control, le backend check si le caller est le owner du NFT id.
+            2.3 Backend->Frontend:
+                2.3.1 si non, retourn une erreur
+                2.3.2 si oui, retourne le NFT encrypte et son contenu
+            2.4 Frontend: si recu le NFT, demande la vetkey pour pouvoir dechiffrer son contenu (principal + NFT id)
+        Note: dans ce cas, il faudra re-encrypte le NFT a chaque changement de owner
+        Note: on a la garantie que seul 1 principal peut deriver la bonne cle de dechiffrement
