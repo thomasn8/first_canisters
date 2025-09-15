@@ -7,7 +7,7 @@ import {
   EncryptedVetKey,
   VetKey,
 } from "@dfinity/vetkeys";
-import { hexToUint8Array, uint8ArrayToHex } from "../utils";
+import { hex_decode, hex_encode } from "../utils/byte_hex_conversions";
 
 function Symmetric() {
   const [vetkeyBytesHex, setVetkeyBytesHex] = useState('[...]');
@@ -40,11 +40,11 @@ function Symmetric() {
 
     // verify + decrypt vetkey
     const vetKey = encryptedVetKey.decryptAndVerify(transportSecretKey, derivedPublicKey, inputBytes);
-    setVetkeyBytesHex(uint8ArrayToHex(vetKey.serialize()));
+    setVetkeyBytesHex(hex_encode(vetKey.serialize()));
   }
 
   async function deriveKeyMaterial(keyByteHex: string) {
-    const vetkeyBytes = hexToUint8Array(keyByteHex);
+    const vetkeyBytes = hex_decode(keyByteHex);
     const vetkey = VetKey.deserialize(vetkeyBytes);
     const derivedKeyMaterial = await vetkey.asDerivedKeyMaterial();
     console.log(await derivedKeyMaterial.deriveAesGcmCryptoKey("vetkeys-example-symmetric-AES"));
@@ -54,13 +54,13 @@ function Symmetric() {
   async function encrypt(message: string, keyBytesHex: string) {
     const derivedKeyMaterial = await deriveKeyMaterial(keyBytesHex);
     const encryptedMessageBytes = await derivedKeyMaterial.encryptMessage(message, "vetkeys-example-symmetric-AES");
-    const encryptedMessageBytesHex = uint8ArrayToHex(encryptedMessageBytes);
+    const encryptedMessageBytesHex = hex_encode(encryptedMessageBytes);
     setEncryptedMessageBytesHex(encryptedMessageBytesHex);
   }
   
   async function decrypt(messageBytesHex: string, keyByteHex: string) {
     const derivedKeyMaterial = await deriveKeyMaterial(keyByteHex);
-    const encryptedMessageBytes = hexToUint8Array(messageBytesHex);
+    const encryptedMessageBytes = hex_decode(messageBytesHex);
     const decryptedMessageBytes = await derivedKeyMaterial.decryptMessage(encryptedMessageBytes, "vetkeys-example-symmetric-AES");
     setDecryptedMessage(new TextDecoder().decode(decryptedMessageBytes))
   }

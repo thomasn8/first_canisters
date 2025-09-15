@@ -10,7 +10,7 @@ import {
   IbeIdentity,
   IbeSeed,
 } from "@dfinity/vetkeys";
-import { hexToUint8Array, uint8ArrayToHex } from "../utils";
+import { hex_decode, hex_encode } from "../utils/byte_hex_conversions";
 
 function Ibe() {
     const [publicKeyBytesHex, setPublicKeyBytesHex] = useState('[...]');
@@ -28,19 +28,19 @@ function Ibe() {
         // TODO: enable login
         
         const pubKeyBytes = await hello_backend.vetkd_public_key() as Uint8Array<ArrayBufferLike>;
-        setPublicKeyBytesHex(uint8ArrayToHex(pubKeyBytes));
+        setPublicKeyBytesHex(hex_encode(pubKeyBytes));
     }
     
     async function encrypt(message: string, recipient: string, keyBytesHex: string) {
         const principal = Principal.fromText(recipient);
-        const derivedPublicKey = DerivedPublicKey.deserialize(hexToUint8Array(keyBytesHex));
+        const derivedPublicKey = DerivedPublicKey.deserialize(hex_decode(keyBytesHex));
         const ciphertext = IbeCiphertext.encrypt(
             derivedPublicKey,
             IbeIdentity.fromPrincipal(principal as any),
             new TextEncoder().encode(message),
             IbeSeed.random(),
         );
-        setEncryptedMessageBytesHex(uint8ArrayToHex(ciphertext.serialize()));
+        setEncryptedMessageBytesHex(hex_encode(ciphertext.serialize()));
     }
 
     async function requestVetkey() {
@@ -64,13 +64,13 @@ function Ibe() {
 
         // verify + decrypt vetkey
         const vetKey = encryptedVetKey.decryptAndVerify(transportSecretKey, derivedPublicKey, inputBytes);
-        setVetkeyBytesHex(uint8ArrayToHex(vetKey.serialize()));
+        setVetkeyBytesHex(hex_encode(vetKey.serialize()));
     }
 
     async function decrypt(messageBytesHex: string, keyBytesHex: string) {
-        const encryptedMessageBytes = hexToUint8Array(messageBytesHex);
+        const encryptedMessageBytes = hex_decode(messageBytesHex);
         const ibeCiphertext = IbeCiphertext.deserialize(encryptedMessageBytes);
-        const vetKey = VetKey.deserialize(hexToUint8Array(keyBytesHex));
+        const vetKey = VetKey.deserialize(hex_decode(keyBytesHex));
         const decryptedMessageBytes = ibeCiphertext.decrypt(vetKey);
         setDecryptedMessage(new TextDecoder().decode(decryptedMessageBytes));
     }
