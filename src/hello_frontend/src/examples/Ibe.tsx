@@ -40,7 +40,7 @@ function Ibe() {
     }
     
     async function encrypt(message: string, recipient: string, keyBytesHex: string) {
-        const principal = Principal.fromText(recipient);
+        const principal = recipient ? Principal.fromText(recipient) : null;
         const derivedPublicKey = DerivedPublicKey.deserialize(hex_decode(keyBytesHex));
         const ciphertext = IbeCiphertext.encrypt(
             derivedPublicKey,
@@ -90,7 +90,7 @@ function Ibe() {
 
             <div>
             <h3>2.1 Encryption</h3>
-                <p>– Encrypt a message for a recipient using IBE with canister public key.</p>
+                <p>– Encrypt a message for a recipient (yourself or another principal) with canister public key and IBE.</p>
                 <label>Message to encrypt:</label><input type="text" placeholder="(plain text)" ref={messageToEncryptRef}/>
                 <label>Recipient's principal:</label><input type="text" placeholder="(plain text)" ref={recipientRef}/>
                 <label>Public key:</label><input type="text" placeholder="(bytes to hex format)" ref={pubKeyBytesHexRef}/>

@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import Home from "./Home";
-import Symmetric from "./demo/Symmetric";
-import Ibe from "./demo/Ibe";
+import Symmetric from "./examples/Symmetric";
+import Ibe from "./examples/Ibe";
 
 // TODO: encrypt a string with timelock
 // TODO: encrypt a data with its id
