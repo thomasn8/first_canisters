@@ -1,6 +1,4 @@
 import { useRef, useState } from "react";
-import { hello_backend } from "declarations/hello_backend";
-import { Principal } from "@dfinity/principal";
 import {
   TransportSecretKey,
   DerivedPublicKey,
@@ -8,11 +6,21 @@ import {
   VetKey,
 } from "@dfinity/vetkeys";
 import { hex_decode, hex_encode } from "../utils/byte_hex_conversions";
+import { useIdentity } from "../IdentityProvider";
+import { LoginLogout } from "../components/LoginLogout";
 
 function Symmetric() {
+  const { state } = useIdentity();
+  
   const [vetkeyBytesHex, setVetkeyBytesHex] = useState('[...]');
   const [encryptedMessageBytesHex, setEncryptedMessageBytesHex] = useState('[...]');
   const [decryptedMessage, setDecryptedMessage] = useState('[...]');
+
+  function resetAll() {
+    setVetkeyBytesHex("[...]");
+    setEncryptedMessageBytesHex("[...]");
+    setDecryptedMessage("[...]");
+  }
 
   const messageToEncryptRef = useRef<HTMLInputElement | null>(null);
   const encryptionKeyRef = useRef<HTMLInputElement | null>(null);
@@ -20,26 +28,20 @@ function Symmetric() {
   const decryptionKeyRef = useRef<HTMLInputElement | null>(null);
 
   async function requestVetkey() {
-    // TODO: enable login
-
-    // principal
-    const principal = Principal.fromText("2vxsx-fae");
-    const inputBytes: Uint8Array = principal.toUint8Array();
-
     // transport key
     const transportSecretKey = TransportSecretKey.random();
     const tpk = transportSecretKey.publicKeyBytes();
 
     // get pub key
-    const publicKeyBytes = await hello_backend.vetkd_public_key() as Uint8Array<ArrayBufferLike>;
+    const publicKeyBytes = await state.actor.vetkd_public_key() as Uint8Array<ArrayBufferLike>;
     const derivedPublicKey = DerivedPublicKey.deserialize(publicKeyBytes);
 
     // get vetkey
-    const encryptedVetKeyBytes = await hello_backend.vetkd_personal_vetkey(tpk) as Uint8Array<ArrayBufferLike>;
+    const encryptedVetKeyBytes = await state.actor.vetkd_personal_vetkey(tpk) as Uint8Array<ArrayBufferLike>;
     const encryptedVetKey = EncryptedVetKey.deserialize(encryptedVetKeyBytes);
 
     // verify + decrypt vetkey
-    const vetKey = encryptedVetKey.decryptAndVerify(transportSecretKey, derivedPublicKey, inputBytes);
+    const vetKey = encryptedVetKey.decryptAndVerify(transportSecretKey, derivedPublicKey, state.principal!.toUint8Array());
     setVetkeyBytesHex(hex_encode(vetKey.serialize()));
   }
 
@@ -67,8 +69,8 @@ function Symmetric() {
 
   return (
     <main>
-      <div>Identity: 2vxsx-fae</div>
-      
+      <LoginLogout resetAll={resetAll}/>
+
       <div>
         <h3>1. Vetkey</h3>
         <p>– Fetch personnal vetkey from the backend.</p>

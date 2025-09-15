@@ -47,3 +47,6 @@ https://internetcomputer.org/docs/building-apps/network-features/vetkeys/api
 
 TS vetkeys:  
 https://dfinity.github.io/vetkeys/index.html
+
+Auth:
+https://github.com/dfinity/examples/tree/master/rust/who_am_i

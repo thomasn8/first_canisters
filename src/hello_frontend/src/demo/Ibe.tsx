@@ -1,5 +1,4 @@
 import { useRef, useState } from "react";
-import { hello_backend } from "declarations/hello_backend";
 import { Principal } from "@dfinity/principal";
 import {
   TransportSecretKey,
@@ -11,13 +10,24 @@ import {
   IbeSeed,
 } from "@dfinity/vetkeys";
 import { hex_decode, hex_encode } from "../utils/byte_hex_conversions";
+import { useIdentity } from "../IdentityProvider";
+import { LoginLogout } from "../components/LoginLogout";
 
 function Ibe() {
+    const { state } = useIdentity();
+
     const [publicKeyBytesHex, setPublicKeyBytesHex] = useState('[...]');
     const [encryptedMessageBytesHex, setEncryptedMessageBytesHex] = useState('[...]');
     const [vetkeyBytesHex, setVetkeyBytesHex] = useState('[...]');
     const [decryptedMessage, setDecryptedMessage] = useState('[...]');
     
+    function resetAll() {
+        setPublicKeyBytesHex("[...]");
+        setEncryptedMessageBytesHex("[...]");
+        setVetkeyBytesHex("[...]");
+        setDecryptedMessage("[...]");
+    }
+
     const messageToEncryptRef = useRef<HTMLInputElement | null>(null);
     const recipientRef = useRef<HTMLInputElement | null>(null);
     const pubKeyBytesHexRef = useRef<HTMLInputElement | null>(null);
@@ -25,9 +35,7 @@ function Ibe() {
     const vetKeyBytesHexRef = useRef<HTMLInputElement | null>(null);
   
     async function requestPubKey() {
-        // TODO: enable login
-        
-        const pubKeyBytes = await hello_backend.vetkd_public_key() as Uint8Array<ArrayBufferLike>;
+        const pubKeyBytes = await state.actor.vetkd_public_key() as Uint8Array<ArrayBufferLike>;
         setPublicKeyBytesHex(hex_encode(pubKeyBytes));
     }
     
@@ -44,26 +52,20 @@ function Ibe() {
     }
 
     async function requestVetkey() {
-        // TODO: enable login
-
-        // principal
-        const principal = Principal.fromText("2vxsx-fae");
-        const inputBytes: Uint8Array = principal.toUint8Array();
-
         // transport key
         const transportSecretKey = TransportSecretKey.random();
         const tpk = transportSecretKey.publicKeyBytes();
 
         // get pub key
-        const publicKeyBytes = await hello_backend.vetkd_public_key() as Uint8Array<ArrayBufferLike>;
+        const publicKeyBytes = await state.actor.vetkd_public_key() as Uint8Array<ArrayBufferLike>;
         const derivedPublicKey = DerivedPublicKey.deserialize(publicKeyBytes);
 
         // get vetkey
-        const encryptedVetKeyBytes = await hello_backend.vetkd_personal_vetkey(tpk) as Uint8Array<ArrayBufferLike>;
+        const encryptedVetKeyBytes = await state.actor.vetkd_personal_vetkey(tpk) as Uint8Array<ArrayBufferLike>;
         const encryptedVetKey = EncryptedVetKey.deserialize(encryptedVetKeyBytes);
 
         // verify + decrypt vetkey
-        const vetKey = encryptedVetKey.decryptAndVerify(transportSecretKey, derivedPublicKey, inputBytes);
+        const vetKey = encryptedVetKey.decryptAndVerify(transportSecretKey, derivedPublicKey, state.principal!.toUint8Array());
         setVetkeyBytesHex(hex_encode(vetKey.serialize()));
     }
 
@@ -77,7 +79,7 @@ function Ibe() {
 
     return (
         <main>
-            <div>Identity: 2vxsx-fae</div>
+            <LoginLogout resetAll={resetAll}/>
 
             <div>
                 <h3>1.1 Pubkey</h3>
