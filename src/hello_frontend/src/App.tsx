@@ -3,8 +3,10 @@ import Home from "./Home";
 import Symmetric from "./demo/Symmetric";
 import Ibe from "./demo/Ibe";
 
-function App() {
+// TODO: encrypt a string with timelock
+// TODO: encrypt a data with its id
 
+function App() {
   return (
     <div>
       <Routes>

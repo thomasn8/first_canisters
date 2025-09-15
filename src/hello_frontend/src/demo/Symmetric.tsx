@@ -80,18 +80,18 @@ function Symmetric() {
 
       <div>
         <h3>2. Encryption</h3>
-        <p>– Encrypt a message with a symmetric encryption key.</p>
+        <p>– Encrypt a message with an AES symmetric key derived from the vetkey.</p>
         <label>Message to encrypt:</label><input type="text" placeholder="(plain text)" ref={messageToEncryptRef}/>
-        <label>Encryption key:</label><input type="text" placeholder="(bytes to hex format)" ref={encryptionKeyRef}/>
+        <label>vetkey:</label><input type="text" placeholder="(bytes to hex format)" ref={encryptionKeyRef}/>
         <button onClick={() => encrypt(messageToEncryptRef.current!.value, encryptionKeyRef.current!.value)}>Encrypt</button>
         <p>Encrypted message: <b>{encryptedMessageBytesHex}</b></p>
       </div>
 
       <div>
         <h3>3. Decryption</h3>
-        <p>– Decrypt an encrypted message the same symmetric decryption key.</p>
+        <p>– Decrypt an encrypted message with the same AES symmetric key derived from the vetkey.</p>
         <label>Message to decrypt:</label><input type="text" placeholder="(bytes to hex format)" ref={messageToDecryptRef}/>
-        <label>Decryption key:</label><input type="text" placeholder="(bytes to hex format)" ref={decryptionKeyRef}/>
+        <label>vetkey:</label><input type="text" placeholder="(bytes to hex format)" ref={decryptionKeyRef}/>
         <button onClick={() => decrypt(messageToDecryptRef.current!.value, decryptionKeyRef.current!.value)}>Decrypt</button>
         <p>Decrypted message: <b>{decryptedMessage}</b></p>
       </div>

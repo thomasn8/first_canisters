@@ -90,7 +90,7 @@ function Ibe() {
 
             <div>
             <h3>2.1 Encryption</h3>
-                <p>– Encrypt a message for a recipient with canister public key.</p>
+                <p>– Encrypt a message for a recipient using IBE with canister public key.</p>
                 <label>Message to encrypt:</label><input type="text" placeholder="(plain text)" ref={messageToEncryptRef}/>
                 <label>Recipient's principal:</label><input type="text" placeholder="(plain text)" ref={recipientRef}/>
                 <label>Public key:</label><input type="text" placeholder="(bytes to hex format)" ref={pubKeyBytesHexRef}/>
@@ -109,9 +109,9 @@ function Ibe() {
 
             <div>
                 <h3>2.2 Decryption</h3>
-                <p>– Decrypt an encrypted message with personal  vetkey.</p>
+                <p>– Decrypt an encrypted message (IBE ciphertext) with the corresponding personal vetkey.</p>
                 <label>Message to decrypt:</label><input type="text" placeholder="(bytes to hex format)" ref={messageToDecryptBytesHexRef}/>
-                <label>Vetkey:</label><input type="text" placeholder="(bytes to hex format)" ref={vetKeyBytesHexRef}/>
+                <label>vetkey:</label><input type="text" placeholder="(bytes to hex format)" ref={vetKeyBytesHexRef}/>
                 <button onClick={() => decrypt(messageToDecryptBytesHexRef.current!.value, vetKeyBytesHexRef.current!.value)}>Decrypt</button>
                 <p>Decrypted message: <b>{decryptedMessage}</b></p>
             </div>
