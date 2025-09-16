@@ -89,7 +89,7 @@ function Ibe() {
             </div>
 
             <div>
-            <h3>2.1 Encryption</h3>
+                <h3>1.2 Encryption</h3>
                 <p>– Encrypt a message for a recipient (yourself or another principal) with canister public key and IBE.</p>
                 <label>Message to encrypt:</label><input type="text" placeholder="(plain text)" ref={messageToEncryptRef}/>
                 <label>Recipient's principal:</label><input type="text" placeholder="(plain text)" ref={recipientRef}/>
