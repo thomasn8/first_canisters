@@ -81,39 +81,51 @@ function Ibe() {
         <main>
             <LoginLogout resetAll={resetAll}/>
 
-            <div>
-                <h3>1.1 Pubkey</h3>
-                <p>– Fetch the canister public key from the backend.</p>
-                <button onClick={requestPubKey}>Request pubkey</button>
-                <p>Pubkey: <b>{publicKeyBytesHex}</b></p>
-            </div>
-
-            <div>
-                <h3>1.2 Encryption</h3>
-                <p>– Encrypt a message for a recipient (yourself or another principal) with canister public key and IBE.</p>
-                <label>Message to encrypt:</label><input type="text" placeholder="(plain text)" ref={messageToEncryptRef}/>
-                <label>Recipient's principal:</label><input type="text" placeholder="(plain text)" ref={recipientRef}/>
-                <label>Public key:</label><input type="text" placeholder="(bytes to hex format)" ref={pubKeyBytesHexRef}/>
-                <button onClick={() => encrypt(messageToEncryptRef.current!.value, recipientRef.current!.value, pubKeyBytesHexRef.current!.value)}>Encrypt</button>
-                <p>Encrypted message: <b>{encryptedMessageBytesHex}</b></p>
-            </div>
-
-            <br/><div>--------------------------------------------------------------------------------------------------------------------------------------------</div><br/>
+            <h1>Asymetrically encrypt message for a recipient or Decrypt a received message</h1>
             
-            <div>
-                <h3>2.1 Vetkey</h3>
-                <p>– Fetch personal vetkey from the backend.</p>
-                <button onClick={requestVetkey}>Request vetkey</button>
-                <p>vetkey: <b>{vetkeyBytesHex}</b></p>
-            </div>
+            <div className="cols">
 
-            <div>
-                <h3>2.2 Decryption</h3>
-                <p>– Decrypt an encrypted message (IBE ciphertext) with the corresponding personal vetkey.</p>
-                <label>Message to decrypt:</label><input type="text" placeholder="(bytes to hex format)" ref={messageToDecryptBytesHexRef}/>
-                <label>vetkey:</label><input type="text" placeholder="(bytes to hex format)" ref={vetKeyBytesHexRef}/>
-                <button onClick={() => decrypt(messageToDecryptBytesHexRef.current!.value, vetKeyBytesHexRef.current!.value)}>Decrypt</button>
-                <p>Decrypted message: <b>{decryptedMessage}</b></p>
+                <div className="client-1 col-50">
+                    <h2>Client 1</h2>
+
+                    <div>
+                        <h3>1.1 Pubkey</h3>
+                        <p>– Fetch the canister public key from the backend.</p>
+                        <button onClick={requestPubKey}>Request pubkey</button>
+                        <p>Pubkey: <b>{publicKeyBytesHex}</b></p>
+                    </div>
+
+                    <div>
+                        <h3>1.2 Encryption</h3>
+                        <p>– Encrypt a message for a recipient (yourself or another principal) with canister public key and IBE.</p>
+                        <label>Message to encrypt:</label><input type="text" placeholder="(plain text)" ref={messageToEncryptRef}/>
+                        <label>Recipient's principal:</label><input type="text" placeholder="(plain text)" ref={recipientRef}/>
+                        <label>Public key:</label><input type="text" placeholder="(bytes to hex format)" ref={pubKeyBytesHexRef}/>
+                        <button onClick={() => encrypt(messageToEncryptRef.current!.value, recipientRef.current!.value, pubKeyBytesHexRef.current!.value)}>Encrypt</button>
+                        <p>Encrypted message: <b>{encryptedMessageBytesHex}</b></p>
+                    </div>
+                </div>
+
+                <div className="client-2 col-50">
+                    <h2>Client 2</h2>
+
+                    <div>
+                        <h3>2.1 Vetkey</h3>
+                        <p>– Fetch personal vetkey from the backend.</p>
+                        <button onClick={requestVetkey}>Request vetkey</button>
+                        <p>vetkey: <b>{vetkeyBytesHex}</b></p>
+                    </div>
+
+                    <div>
+                        <h3>2.2 Decryption</h3>
+                        <p>– Decrypt an encrypted message (IBE ciphertext) with the corresponding personal vetkey.</p>
+                        <label>Message to decrypt:</label><input type="text" placeholder="(bytes to hex format)" ref={messageToDecryptBytesHexRef}/>
+                        <label>vetkey:</label><input type="text" placeholder="(bytes to hex format)" ref={vetKeyBytesHexRef}/>
+                        <button onClick={() => decrypt(messageToDecryptBytesHexRef.current!.value, vetKeyBytesHexRef.current!.value)}>Decrypt</button>
+                        <p>Decrypted message: <b>{decryptedMessage}</b></p>
+                    </div>
+                </div>
+
             </div>
         </main>
     );

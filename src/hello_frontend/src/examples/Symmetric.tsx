@@ -70,31 +70,42 @@ function Symmetric() {
   return (
     <main>
       <LoginLogout resetAll={resetAll}/>
+      
+      <h1>Encrypt/decrypt message with a personal symmetric key</h1>
+      
+      <div className="cols">
 
-      <div>
-        <h3>1. Vetkey</h3>
-        <p>– Fetch personnal vetkey from the backend.</p>
-        <button onClick={requestVetkey}>Request vetkey</button>
-        <p>vetkey: <b>{vetkeyBytesHex}</b></p>
+        <div className="client-1 col-50">
+          <h2>Client 1</h2>
+
+          <div>
+            <h3>1. Vetkey</h3>
+            <p>– Fetch personnal vetkey from the backend.</p>
+            <button onClick={requestVetkey}>Request vetkey</button>
+            <p>vetkey: <b>{vetkeyBytesHex}</b></p>
+          </div>
+
+          <div>
+            <h3>2. Encryption</h3>
+            <p>– Encrypt a message with an AES symmetric key derived from the vetkey.</p>
+            <label>Message to encrypt:</label><input type="text" placeholder="(plain text)" ref={messageToEncryptRef}/>
+            <label>vetkey:</label><input type="text" placeholder="(bytes to hex format)" ref={encryptionKeyRef}/>
+            <button onClick={() => encrypt(messageToEncryptRef.current!.value, encryptionKeyRef.current!.value)}>Encrypt</button>
+            <p>Encrypted message: <b>{encryptedMessageBytesHex}</b></p>
+          </div>
+
+          <div>
+            <h3>3. Decryption</h3>
+            <p>– Decrypt an encrypted message with the same AES symmetric key derived from the vetkey.</p>
+            <label>Message to decrypt:</label><input type="text" placeholder="(bytes to hex format)" ref={messageToDecryptRef}/>
+            <label>vetkey:</label><input type="text" placeholder="(bytes to hex format)" ref={decryptionKeyRef}/>
+            <button onClick={() => decrypt(messageToDecryptRef.current!.value, decryptionKeyRef.current!.value)}>Decrypt</button>
+            <p>Decrypted message: <b>{decryptedMessage}</b></p>
+          </div>
+        </div>
+      
       </div>
 
-      <div>
-        <h3>2. Encryption</h3>
-        <p>– Encrypt a message with an AES symmetric key derived from the vetkey.</p>
-        <label>Message to encrypt:</label><input type="text" placeholder="(plain text)" ref={messageToEncryptRef}/>
-        <label>vetkey:</label><input type="text" placeholder="(bytes to hex format)" ref={encryptionKeyRef}/>
-        <button onClick={() => encrypt(messageToEncryptRef.current!.value, encryptionKeyRef.current!.value)}>Encrypt</button>
-        <p>Encrypted message: <b>{encryptedMessageBytesHex}</b></p>
-      </div>
-
-      <div>
-        <h3>3. Decryption</h3>
-        <p>– Decrypt an encrypted message with the same AES symmetric key derived from the vetkey.</p>
-        <label>Message to decrypt:</label><input type="text" placeholder="(bytes to hex format)" ref={messageToDecryptRef}/>
-        <label>vetkey:</label><input type="text" placeholder="(bytes to hex format)" ref={decryptionKeyRef}/>
-        <button onClick={() => decrypt(messageToDecryptRef.current!.value, decryptionKeyRef.current!.value)}>Decrypt</button>
-        <p>Decrypted message: <b>{decryptedMessage}</b></p>
-      </div>
     </main>
   );
 }

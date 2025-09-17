@@ -110,54 +110,66 @@ function Nft() {
         <main>
             <LoginLogout resetAll={resetAll}/>
 
-            <div>
-                <h3>1.1 NFT</h3>
-                <p>– Own a NFT.</p>
-                <button onClick={() => ownNft("abc")}>Give me a NFT</button><p>Nft: <b>{JSON.stringify(nft)}</b></p>
-            </div>
+            <h1>Encrypt the content of the NFT to allow access to specific identifiers</h1>
 
-            <div>
-                <h3>1.2 Pubkey</h3>
-                <p>– Fetch the canister public key from the backend.</p>
-                <button onClick={requestPubKey}>Request pubkey</button>
-                <p>Pubkey: <b>{publicKeyBytesHex}</b></p>
-            </div>
+            <div className="cols">
 
-            <div>
-                <h3>1.3 Encryption</h3>
-                <p>– Encrypt your NFT content with canister public key and IBE (based on NFT id).</p>
-                <label>NFT content to encrypt:</label><textarea placeholder="(plain text)" ref={contentToEncryptRef}/>
-                <label>Public key:</label><input type="text" placeholder="(bytes to hex format)" ref={pubKeyBytesHexRef}/>
-                <button onClick={() => encrypt(contentToEncryptRef.current!.value, (nft as Nft).id, pubKeyBytesHexRef.current!.value)}>Encrypt</button>
-                <p>Encrypted content: <b>{encryptedContentBytesHex}</b></p>
-            </div>
+                <div className="col-50">
+                    <h2>Client 1</h2>
 
-            <div>
-                <h3>1.4 Give access and save onchain</h3>
-                <p>– Post your NFT with encrypted content and set decryption access to a list of principals.</p>
-                <label>NFT content encrypted:</label><input type="text" placeholder="(bytes to hex format)" ref={encryptedContentBytesHexRef}/>
-                <label>Principals to give content access:</label><textarea style={{width: "400px"}} placeholder="(plain text, separate principals with newlines)" ref={authorizedPrincipalsRef}/>
-                <button onClick={() => postNftContent((nft as Nft).id, encryptedContentBytesHexRef.current!.value, authorizedPrincipalsRef.current!.value)}>Post</button>
-                <p>Response: <b>{postResponse}</b></p>
-            </div>
+                    <div>
+                        <h3>1.1 NFT</h3>
+                        <p>– Own a NFT.</p>
+                        <button onClick={() => ownNft("abc")}>Give me a NFT</button><p>Nft: <b>{JSON.stringify(nft)}</b></p>
+                    </div>
 
-            <br/><div>--------------------------------------------------------------------------------------------------------------------------------------------</div><br/>
+                    <div>
+                        <h3>1.2 Pubkey</h3>
+                        <p>– Fetch the canister public key from the backend.</p>
+                        <button onClick={requestPubKey}>Request pubkey</button>
+                        <p>Pubkey: <b>{publicKeyBytesHex}</b></p>
+                    </div>
 
-            <div>
-                <h3>2.1 Vetkey</h3>
-                <p>– Fetch vetkey for a specific NFT from the backend.</p>
-                <label>NFT ID:</label><input type="text" placeholder="(plain text)" ref={nftIdToDecryptRef}/>
-                <button onClick={() => requestVetkey(nftIdToDecryptRef.current!.value)}>Request vetkey</button>
-                <p>vetkey: <b>{vetkeyBytesHex}</b></p>
-            </div>
+                    <div>
+                        <h3>1.3 Encryption</h3>
+                        <p>– Encrypt your NFT content with canister public key and IBE (based on NFT id).</p>
+                        <label>NFT content to encrypt:</label><textarea placeholder="(plain text)" ref={contentToEncryptRef}/>
+                        <label>Public key:</label><input type="text" placeholder="(bytes to hex format)" ref={pubKeyBytesHexRef}/>
+                        <button onClick={() => encrypt(contentToEncryptRef.current!.value, (nft as Nft).id, pubKeyBytesHexRef.current!.value)}>Encrypt</button>
+                        <p>Encrypted content: <b>{encryptedContentBytesHex}</b></p>
+                    </div>
 
-            <div>
-                <h3>2.2 Decryption</h3>
-                <p>– Decrypt an encrypted message (IBE ciphertext) with the corresponding personal vetkey.</p>
-                <label>Message to decrypt:</label><input type="text" placeholder="(bytes to hex format)" ref={messageToDecryptBytesHexRef}/>
-                <label>vetkey:</label><input type="text" placeholder="(bytes to hex format)" ref={vetKeyBytesHexRef}/>
-                <button onClick={() => decrypt(messageToDecryptBytesHexRef.current!.value, vetKeyBytesHexRef.current!.value)}>Decrypt</button>
-                <p>Decrypted message: <b>{decryptedMessage}</b></p>
+                    <div>
+                        <h3>1.4 Give access and save onchain</h3>
+                        <p>– Post your NFT with encrypted content and set decryption access to a list of principals.</p>
+                        <label>NFT content encrypted:</label><input type="text" placeholder="(bytes to hex format)" ref={encryptedContentBytesHexRef}/>
+                        <label>Principals to give content access:</label><textarea style={{width: "400px"}} placeholder="(plain text, separate principals with newlines)" ref={authorizedPrincipalsRef}/>
+                        <button onClick={() => postNftContent((nft as Nft).id, encryptedContentBytesHexRef.current!.value, authorizedPrincipalsRef.current!.value)}>Post</button>
+                        <p>Response: <b>{postResponse}</b></p>
+                    </div>
+                </div>
+
+                <div className="client-2 col-50">
+                    <h2>Client 2</h2>
+
+                    <div>
+                        <h3>2.1 Vetkey</h3>
+                        <p>– Fetch vetkey for a specific NFT from the backend.</p>
+                        <label>NFT ID:</label><input type="text" placeholder="(plain text)" ref={nftIdToDecryptRef}/>
+                        <button onClick={() => requestVetkey(nftIdToDecryptRef.current!.value)}>Request vetkey</button>
+                        <p>vetkey: <b>{vetkeyBytesHex}</b></p>
+                    </div>
+
+                    <div>
+                        <h3>2.2 Decryption</h3>
+                        <p>– Decrypt an encrypted message (IBE ciphertext) with the corresponding personal vetkey.</p>
+                        <label>Message to decrypt:</label><input type="text" placeholder="(bytes to hex format)" ref={messageToDecryptBytesHexRef}/>
+                        <label>vetkey:</label><input type="text" placeholder="(bytes to hex format)" ref={vetKeyBytesHexRef}/>
+                        <button onClick={() => decrypt(messageToDecryptBytesHexRef.current!.value, vetKeyBytesHexRef.current!.value)}>Decrypt</button>
+                        <p>Decrypted message: <b>{decryptedMessage}</b></p>
+                    </div>
+                </div>
+            
             </div>
         </main>
     );

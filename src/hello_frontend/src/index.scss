@@ -39,3 +39,54 @@ button[type="submit"] {
 .browser-warning {
   display: none;
 }
+
+.login {
+  width: 100%;
+  text-align: center;
+  background-color: #222;
+  color: white;
+  padding: 20px;
+}
+.cols {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+.col-50 {
+  padding: 0 30px;
+  width: 50%;
+}
+
+.client-2 {
+  border-left: 1px solid #222;
+}
+
+h1 {
+  text-align: center;
+}
+
+button {
+  font-size: 1.25rem;
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: gray;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 15px;
+  transition: 0.05;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: rgb(101, 101, 101);
+}
+
+button:active {
+  transform: scale(0.9);
+  background-color: rgb(79, 79, 79);
+}
+
+input, textarea {
+  margin: 0 15px;
+}

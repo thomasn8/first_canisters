@@ -8,7 +8,7 @@ export function LoginLogout({ resetAll }: ChildProps) {
 const { state, login, logout } = useIdentity();
     
  return (
-    <div>
+    <div className="login">
         <p>Identity: {state.principal?.toText() ?? "2vxsx-fae"}</p>
         {
         !state.isAuthenticated ?
