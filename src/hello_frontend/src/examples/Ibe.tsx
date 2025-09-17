@@ -81,7 +81,7 @@ function Ibe() {
         <main>
             <LoginLogout resetAll={resetAll}/>
 
-            <h1>Asymetrically encrypt message for a recipient or Decrypt a received message</h1>
+            <h1>Asymetrically encrypt message for a recipient (client 1) or Decrypt a received message (client 2)</h1>
             
             <div className="cols">
 

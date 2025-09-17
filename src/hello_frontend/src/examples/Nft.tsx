@@ -110,7 +110,7 @@ function Nft() {
         <main>
             <LoginLogout resetAll={resetAll}/>
 
-            <h1>Encrypt the content of the NFT to allow access to specific identifiers</h1>
+            <h1>Encrypt the content of the NFT (client 1) to allow access to specific identifiers (client 2)</h1>
 
             <div className="cols">
 

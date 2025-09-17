@@ -24,24 +24,24 @@ Key file: [`src/hello_frontend/src/examples/Symmetric.tsx`](src/hello_frontend/s
 
 URL: http://localhost:3000/symmetric
 
-TODO: add screen
+![alt text](screens/symmetric-screen.png)
 
 ### Example 2: Asymetrically encrypt message for a recipient or Decrypt a message received
 Key file: [`src/hello_frontend/src/examples/Ibe.tsx`](src/hello_frontend/src/examples/Ibe.tsx)
 
 URL: http://localhost:3000/ibe
 
-TODO: add screen
+![alt text](screens/ibe-screen.png)
 
 This example could be used to manage encrypted NFT content, for which decryption would only be possible for an IBE principal (possibly the owner of the nft).  
-This ensures a stricter access controll but the drawback is that the NFT content can be decrypted by a single principal and we need to re-encrypt the content when the owner changes.
+This ensures a stricter access controll but the drawback is that the NFT content can be decrypted only by a single principal and we need to re-encrypt the content when the owner changes.
 
 ### Example 3: Encrypt the content of the NFT to allow access to specific principals
 Key file: [`src/hello_frontend/src/examples/Nft.tsx`](src/hello_frontend/src/examples/Nft.tsx)
 
 URL: http://localhost:3000/nft
 
-TODO: add screen
+![alt text](screens/nft-screen.png)
 
 In this case, NFT content encryption is managed using the NFT id. Therefore, we can manually handle its access controll in the backend canister logic to give permission to a set of principals.  
 It gives more flexibility and no need to re-encrypt the NFT content when the owner changes (only update the data structure that handles the permission).
